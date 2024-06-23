@@ -40,4 +40,6 @@ Route::middleware('auth:api')->group( function () {
     Route::post('community/create', [CommunityController::class, 'create']);
     Route::post('community/update', [CommunityController::class, 'update']);
     Route::post('community/delete', [CommunityController::class, 'delete']);
+    Route::post('community/comment', [CommunityController::class, 'Comments']);
+
 });

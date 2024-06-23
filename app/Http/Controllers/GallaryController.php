@@ -56,7 +56,7 @@ class GallaryController extends Controller
             return response()->json([
                 'message' => 'Image upload failed',
                 'error' => $errorResponse,
-            ], $response->status());
+            ], 422);
         }
        
        
