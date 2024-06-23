@@ -16,7 +16,7 @@ class GallaryController extends Controller
             'image' => 'required|image|max:2048',
             'dress_type' => 'required|string',
             'season_type' => 'required|string',
-            'type'      =>'required|string',
+           // 'type'      =>'required|string',
             'name' => 'required|string',
         ]);
         $apiKey = '878670bc3b0ce7251b76832e39ba7c94';
@@ -76,7 +76,7 @@ class GallaryController extends Controller
             'image' => 'sometimes|image',
             'dress_type' => 'sometimes|string',
             'season_type' => 'sometimes|string',
-            'type'      =>'sometimes|string',
+         //   'type'      =>'sometimes|string',
             'name' => 'sometimes|string',
         ]);
         if($request->hasFile('image'))
