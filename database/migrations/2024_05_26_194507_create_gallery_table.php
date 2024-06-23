@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('gallery', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
-            $table->binary('image');
+            $table->string('image');
+            $table->string('image_thumbnail');
             $table->string('dress_type');
             $table->string('season_type');
             $table->string('name');

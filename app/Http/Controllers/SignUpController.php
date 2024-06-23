@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 
 class SignUpController extends Controller
 {
@@ -87,12 +88,19 @@ class SignUpController extends Controller
         }
     }
 
-    public function sendOtp(Request $request)
+    public function sendResetLink(Request $request)
     {
         $verify_email=User::where('email',$request->email)->first();
         if($verify_email)
         {
                 //send mail
+                $details = [
+                    'title' => 'Mail from ItSolutionStuff.com',
+                    'body' => 'This is for testing email using smtp'
+                ];
+               
+                Mail::to($request->email)->send(new \App\Mail\MyTestMail($details));
+                return response()->json(['status'=>true,'message'=>'Please check your mail.'],200);
         }
         else
         {
@@ -102,6 +110,9 @@ class SignUpController extends Controller
 
     public function forgetpassword(Request $request)
     {
-        
+        DB::table('users')->where('email',$request->email)->update([
+            'password' =>Hash::make($request->password)
+        ]);
+        return response()->json(['status'=>true,'message'=>'password reset successfully.'],200);
     }
 }

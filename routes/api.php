@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('login', [SignUpController::class, 'login']);
 Route::post('signup', [SignUpController::class, 'signUp']);
+Route::post('resetlink', [SignUpController::class, 'sendResetLink']);
+Route::post('setpassword', [SignUpController::class, 'forgetpassword']);
+
+
 Route::middleware('auth:api')->group( function () {
 
     ///////weather api/////////

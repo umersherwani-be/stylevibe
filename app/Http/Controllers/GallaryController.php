@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class GallaryController extends Controller
 {
@@ -18,27 +19,53 @@ class GallaryController extends Controller
             'type'      =>'required|string',
             'name' => 'required|string',
         ]);
-       
-        $gallery = DB::table('gallery')->insert([
-            'user_id' =>Auth::user()->id,
-            'image' => $request->image,
-            'dress_type' => $request->dress_type,
-            'season_type' => $request->season_type,
-            'name' => $request->name,
+        $apiKey = '878670bc3b0ce7251b76832e39ba7c94';
+        $imageData = $request->input('image');
+        if (strpos($imageData, 'data:image') === 0) {
+            $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $imageData);
+        } else {
+            if ($request->hasFile('image')) {
+                $imageFile = $request->file('image');
+                $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
+            } else {
+                return response()->json([
+                    'message' => 'Invalid image data',
+                ], 400);
+            }
+        }
+        $response = Http::asForm()->post("https://api.imgbb.com/1/upload", [
+            'key' => $apiKey,
+            'image' =>$imageData,//base64_encode($request->image),
+            'expiration' => 600,  // Set expiration if needed
         ]);
+        if ($response->successful()) {
+            $responseData = $response->json();
 
-        return response()->json($gallery, 201);
+            $gallery = DB::table('gallery')->insert([
+                'user_id'         =>Auth::user()->id,
+                'image'           => $responseData['data']['url'],
+                'dress_type'      => $request->dress_type,
+                'season_type'     => $request->season_type,
+                'image_thumbnail' => $responseData['data']['thumb']['url'],
+                'name'            => $request->name,
+            ]);
+    
+            return response()->json(['status'=>true,'messgae'=>'wardrode created successfully.'], 200);
+        } else {
+            $errorResponse = $response->json();
+            return response()->json([
+                'message' => 'Image upload failed',
+                'error' => $errorResponse,
+            ], $response->status());
+        }
+       
+       
     }
 
     public function view(Request $request)
     {
-        $data = DB::table('gallery')->where('user_id',1)->get();
-        foreach($data as $single)
-        {
-           
-            // $single->image = base64_decode($single->image);
-            // dd($single->image);
-        }
+
+        $data = DB::table('gallery')->where('user_id',Auth::user()->id)->get();
         return response()->json(['status'=>true,'data'=>$data],201);
     }
 
@@ -52,20 +79,64 @@ class GallaryController extends Controller
             'type'      =>'sometimes|string',
             'name' => 'sometimes|string',
         ]);
-
-        if ($request->hasFile('image')) {
-            $imageData = file_get_contents($request->file('image')->getRealPath());
-            $gallery = DB::table('gallery')->where('user_id',Auth::user()->id)->where('id',$request->id)->update([
-                'image' => $imageData,
+        if($request->hasFile('image'))
+        {
+        $apiKey = '878670bc3b0ce7251b76832e39ba7c94';
+        $imageData = $request->input('image');
+        if (strpos($imageData, 'data:image') === 0) {
+            $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $imageData);
+        } else {
+            if ($request->hasFile('image')) {
+                $imageFile = $request->file('image');
+                $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
+            } else {
+                return response()->json([
+                    'message' => 'Invalid image data',
+                ], 400);
+            }
+        }
+        $response = Http::asForm()->post("https://api.imgbb.com/1/upload", [
+            'key' => $apiKey,
+            'image' => $request->image,
+            'expiration' => 600,  // Set expiration if needed
+        ]);
+        if ($response->successful()) {
+            $responseData = $response->json();
+            DB::table('gallery')->where('user_id',Auth::user()->id)->where('id',$request->id)->update([
+                'image' => $responseData['data']['url'],
                 'dress_type' => $request->dress_type,
                 'season_type' => $request->season_type,
                 'name' => $request->name,
+                'image_thumbnail' => $responseData['data']['thumb']['url']
             ]);
+            return response()->json([
+                'message' => 'wardrobe updated successfully.',
+                'status' => true,
+            ],200);
+        }
+        else{
+            $errorResponse = $response->json();
+            return response()->json([
+                'message' =>$errorResponse,
+                'status' =>false ,
+            ], 422);
         }
 
-        $gallery->update($request->only(['dress_type', 'season_type', 'name']));
-
-        return response()->json($gallery);
+        }
+        else
+        {
+            DB::table('gallery')->where('user_id',Auth::user()->id)->where('id',$request->id)->update([
+                'image' => $request->image,
+                'dress_type' => $request->dress_type,
+                'season_type' => $request->season_type,
+                'name' => $request->name,
+                'image_thumbnail' => $request->image_thumbnail
+            ]);
+            return response()->json([
+                'message' => 'wardrobe updated successfully.',
+                'status' => true,
+            ],200);
+        }
     }
 
     public function delete(Request $request)
