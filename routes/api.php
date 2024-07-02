@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\GallaryController;
 use App\Http\Controllers\SignUpController;
 use App\Http\Controllers\WeatherController;
@@ -22,10 +23,12 @@ Route::post('login', [SignUpController::class, 'login']);
 Route::post('signup', [SignUpController::class, 'signUp']);
 Route::post('resetlink', [SignUpController::class, 'sendResetLink']);
 Route::post('setpassword', [SignUpController::class, 'forgetpassword']);
+Route::post('contact-us', [ContactUsController::class, 'contactUs']);
+
 
 
 Route::middleware('auth:api')->group( function () {
-
+// 
     ///////weather api/////////
     Route::post('current-temperature', [WeatherController::class, 'getCurrentTemperature']);
 

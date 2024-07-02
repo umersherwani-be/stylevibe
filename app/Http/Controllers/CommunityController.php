@@ -52,7 +52,7 @@ class CommunityController extends Controller
             $response = Http::asForm()->post("https://api.imgbb.com/1/upload", [
             'key' => $apiKey,
             'image' =>$imageData,//base64_encode($request->image),
-            'expiration' => 600,  // Set expiration if needed
+            // 'expiration' => 600,  // Set expiration if needed
             ]);
             if ($response->successful()) {
                 $responseData = $response->json();
@@ -130,7 +130,7 @@ class CommunityController extends Controller
             $response = Http::asForm()->post("https://api.imgbb.com/1/upload", [
             'key' => $apiKey,
             'image' =>$imageData,//base64_encode($request->image),
-            'expiration' => 600,  // Set expiration if needed
+            // 'expiration' => 600,  // Set expiration if needed
             ]);
             if ($response->successful()) {
                 $responseData = $response->json();
