@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class CommunityController extends Controller
     public function create(Request $request)
     {
         $request->validate([
+            'title'     => 'required',
             'content' => 'required|string',
             'media' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:20480', // 20MB max
         ]);
@@ -61,6 +63,7 @@ class CommunityController extends Controller
                 'content'    => $request->content,
                 'media'      => $responseData['data']['url'],
                 'media_type' => $mediaType,
+                'title'      => $request->title
                 ]);
             }
             else 
@@ -80,6 +83,8 @@ class CommunityController extends Controller
             'content'    => $request->content,
             'media'      => $mediaData,
             'media_type' => $mediaType,
+            'title'      => $request->title,
+            'created_at' => Carbon::now()
             ]);
             return response()->json(['status'=>true,'message'=> "Post Created Successfully."], 200);
         }
@@ -138,6 +143,8 @@ class CommunityController extends Controller
                     'content' => $request->content,
                     'media' => $responseData['data']['url'],
                     'media_type' => $request->media_type,
+                    'title'      => $request->title,
+                    'updated_at' => Carbon::now()
                 ]);
               
             }
@@ -156,6 +163,8 @@ class CommunityController extends Controller
                 'content' => $request->content,
                 'media' => $request->media,
                 // 'media_type' => $mediaType,
+                'title' => $request->title,
+                'updated_at' => Carbon::now()
             ]);
         }
         return response()->json(['status'=>true,'message'=>'Updated Successfully!'],200);
@@ -174,9 +183,10 @@ class CommunityController extends Controller
         if($post)
         {
             DB::table('comments')->insert([
-                'post_id'  => $request->post_id,
-                'user_id'  => Auth::user()->id,
-                'comment' => $request->comment
+                'post_id'    => $request->post_id,
+                'user_id'    => Auth::user()->id,
+                'comment'    => $request->comment,
+                'created_at' => Carbon::now()
                 ]);
                 return response()->json(['status'=>true,'message'=>'comment posted successfully.'],200);
         }

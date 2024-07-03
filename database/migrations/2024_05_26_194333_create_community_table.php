@@ -15,6 +15,7 @@ return new class extends Migration
                 $table->id();
                 $table->unsignedInteger('user_id');
                 $table->text('content');
+                $table->string('title');
                 $table->string('media')->nullable();
                 $table->string('media_type')->nullable(); // To distinguish between image/video
                 $table->timestamps();
