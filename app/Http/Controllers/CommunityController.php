@@ -63,7 +63,8 @@ class CommunityController extends Controller
                 'content'    => $request->content,
                 'media'      => $responseData['data']['url'],
                 'media_type' => $mediaType,
-                'title'      => $request->title
+                'title'      => $request->title,
+                'created_at' => Carbon::now()
                 ]);
             }
             else 

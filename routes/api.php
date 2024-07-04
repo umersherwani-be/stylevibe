@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\GallaryController;
+use App\Http\Controllers\OutfitController;
 use App\Http\Controllers\SignUpController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
@@ -44,5 +45,11 @@ Route::middleware('auth:api')->group( function () {
     Route::post('community/update', [CommunityController::class, 'update']);
     Route::post('community/delete', [CommunityController::class, 'delete']);
     Route::post('community/comment', [CommunityController::class, 'Comments']);
+    
+    
+    ////outfit
+    Route::post('outfit/generate', [OutfitController::class, 'suggestOutfits']);
+
+    
 
 });
